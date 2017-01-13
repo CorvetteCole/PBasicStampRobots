@@ -1,0 +1,66 @@
+'{$STAMP BS2}
+'{$PBASIC 2.5}
+x VAR Word
+y VAR Word
+FWD:
+DO
+PULSOUT 12, 650                                 '12 is right motor, 13 is left
+PULSOUT 13, 840
+PAUSE 20
+IF (IN5 = 0) AND (IN7 = 0) THEN EXIT    'IN5 is the left whisker, IN7 the right
+LOOP
+GOSUB Right90
+
+Right90:
+FOR x=1 TO 10
+PULSOUT 12, 800
+PULSOUT 13, 700
+PAUSE 20
+NEXT
+PAUSE 50
+FOR X=1 TO 20
+PULSOUT 12, 800
+PULSOUT 13, 800
+PAUSE 20
+NEXT
+PAUSE 50              'Need to add small reverse before turn
+GOSUB LeftFWD
+
+LeftFWD:
+DO
+PULSOUT 12, 650
+PULSOUT 13, 785              'Adjusts turning rate of left motor to be slower so it brushes against the side continously
+PAUSE 20
+IF (IN5 = 0) THEN EXIT
+IF (IN5 = 1) THEN y=y+1
+IF (y=90) THEN GOSUB Left90
+LOOP
+y=0
+GOSUB Straighten
+
+Straighten:
+IF (IN7 = 0) THEN GOSUB Right90
+FOR x=1 TO 15
+PULSOUT 12, 760
+PULSOUT 13, 780
+PAUSE 20
+NEXT
+GOSUB LeftFWD
+
+Left90:
+FOR X=1 TO 20
+PULSOUT 12, 700
+PULSOUT 13, 700
+PAUSE 20
+NEXT
+y=0
+GOSUB FWD
+
+PartLeft:
+FOR X=1 TO 17
+PULSOUT 12, 700
+PULSOUT 13, 700
+PAUSE 20
+NEXT
+y=0
+GOSUB FWD

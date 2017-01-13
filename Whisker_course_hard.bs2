@@ -1,0 +1,105 @@
+'{$STAMP BS2}
+'{$PBASIC 2.5}
+x VAR Word
+y VAR Word
+z VAR Word
+a VAR Word
+FWD:
+DO
+PULSOUT 12, 650                                 '12 is right motor, 13 is left
+PULSOUT 13, 830
+PAUSE 20
+IF (IN5 = 0) AND (IN7 = 0) THEN EXIT    'IN5 is the left whisker, IN7 the right
+LOOP
+IF (a<100) THEN a=a+1
+IF (a=3) OR (a=4) THEN GOSUB Left90
+IF (a=0) OR (a=1) OR (a=2) THEN GOSUB Right90
+
+Right90:
+IF (a=0) OR (a=1) OR (a=2) OR (a=4) THEN
+FOR x=1 TO 10
+PULSOUT 12, 800
+PULSOUT 13, 700
+PAUSE 20
+NEXT
+ENDIF
+PAUSE 50
+FOR X=1 TO 16
+PULSOUT 12, 800
+PULSOUT 13, 800
+PAUSE 20
+NEXT
+IF (a=3) THEN
+GOSUB FWD
+ELSE
+GOSUB LeftFWD
+ENDIF
+
+LeftFWD:
+DO
+PULSOUT 12, 650
+PULSOUT 13, 785              'Adjusts turning rate of left motor to be slower so it brushes against the side continously
+PAUSE 20
+IF (IN5 = 0) THEN EXIT
+IF (IN5 = 1) THEN y=y+1
+IF (y=60) THEN GOSUB Left90
+LOOP
+y=0
+GOSUB Straighten
+
+Straighten:
+IF (IN7 = 0) THEN GOSUB Right90
+FOR x=1 TO 15
+PULSOUT 12, 760
+PULSOUT 13, 780
+PAUSE 20
+NEXT
+GOSUB LeftFWD
+
+Left90:
+IF (a=3) THEN
+FOR x=1 TO 10
+PULSOUT 12, 800
+PULSOUT 13, 700
+PAUSE 20
+NEXT
+ENDIF
+PAUSE 50
+IF (a=0) OR (a=1) OR (a=2) OR (a=5) THEN
+FOR X=1 TO 10
+PULSOUT 12, 700
+PULSOUT 13, 700
+PAUSE 20
+NEXT
+ENDIF
+IF (a=3) OR (a=4) THEN
+FOR X=1 TO 15
+PULSOUT 12, 700
+PULSOUT 13, 700
+PAUSE 20
+NEXT
+ENDIF
+y=0
+IF (a=0) OR (a=1) OR (a=2) OR (a=4) THEN GOSUB FWD
+IF (a=3) THEN GOSUB RightFWD
+
+RightFWD:
+DO
+PULSOUT 12, 715
+PULSOUT 13, 850              'Adjusts turning rate of left motor to be slower so it brushes against the side continously
+PAUSE 20
+IF (IN7 = 0) THEN EXIT
+IF (IN7 = 1) THEN y=y+1
+IF (y=70) THEN GOSUB Right90
+LOOP
+y=0
+GOSUB StraightenRight
+
+StraightenRight:
+IF (IN5 = 0) THEN GOSUB Left90
+FOR x=1 TO 15
+PULSOUT 12, 720
+PULSOUT 13, 730
+PAUSE 20
+NEXT
+GOSUB RightFWD
