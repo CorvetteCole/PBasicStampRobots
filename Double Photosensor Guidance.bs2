@@ -2,6 +2,7 @@
 ' {$PBASIC 2.5}
 x VAR Word                                 'x is for left (in6) photosensor, y is for right (in3) photosensor
 y VAR Word
+
 FWD:
 DO
 PULSOUT 12, 650                            '12 is right motor, 13 is left
@@ -16,3 +17,18 @@ IF (y=500) THEN GOSUB Right90
 LOOP
 
 Left90:
+x=0
+FOR X=1 TO 10
+PULSOUT 12, 700
+PULSOUT 13, 700
+PAUSE 20
+NEXT
+GOSUB FWD
+
+Right90:
+y=0
+FOR x=1 TO 10
+PULSOUT 12, 800
+PULSOUT 13, 800
+PAUSE 20
+NEXT GOSUB FWD
