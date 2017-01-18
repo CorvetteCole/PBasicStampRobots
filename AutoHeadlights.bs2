@@ -5,20 +5,20 @@ ActivateLight:
 DO
 IF (IN6=0) THEN x=x+1  'IN6 is photosensor. Under light it is "1". Under no light it is "0" (in theory).
 IF (IN6=1) THEN x=0
-IF (x=1000) THEN EXIT  'waits 1 second before exiting.
+IF (x=250) THEN EXIT  'waits 1 second before exiting.
 PAUSE 1
 LOOP
 x=0
-HIGH 0                  'the number after high and low refers to the I/O pin the LED(s) are connected to.
+HIGH 1                  'the number after high and low refers to the I/O pin the LED(s) are connected to.
 GOSUB DeactivateLight
 
 DeactivateLight:
 DO
 IF (IN6=1) THEN x=x+1
 IF (IN6=0) THEN x=0
-IF (x=1000) THEN EXIT
+IF (x=250) THEN EXIT
 PAUSE 1
 LOOP
 x=0
-LOW 0
+LOW 1
 GOSUB ActivateLight
