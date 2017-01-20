@@ -1,0 +1,23 @@
+' {$STAMP BS2}
+' {$PBASIC 2.5}
+
+tLeft          VAR     Word
+tRight         VAR     Word
+
+PAUSE 1000
+
+DO
+
+  HIGH 6
+  PAUSE 1
+  RCTIME 6, 1, tLeft
+
+  HIGH 3
+  PAUSE 1
+  RCTIME 3, 1, tRight
+
+  ' Display result
+  DEBUG HOME, "tLeft = ", DEC5 tLeft, "  ", "tRight = ", DEC5 tRight
+  PAUSE 100
+
+LOOP
