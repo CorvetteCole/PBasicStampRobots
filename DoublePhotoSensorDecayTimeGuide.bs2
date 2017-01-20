@@ -1,0 +1,36 @@
+' {$STAMP BS2}
+' {$PBASIC 2.5}
+tLeft VAR Word
+tRight VAR Word
+x VAR Word
+FWD:
+DO
+  PULSOUT 12, 650                            '12 is right motor, 13 is left
+  PULSOUT 13, 830
+  HIGH 6
+  PAUSE 1
+  RCTIME 6, 1, tLeft
+
+  HIGH 3
+  PAUSE 1
+  RCTIME 3, 1, tRight
+
+  IF (0<tLeft) AND (tLeft<5) THEN GOSUB Left90
+  IF (0<tRight) AND (tRight<5) THEN GOSUB Right90
+LOOP
+
+Left90:
+FOR x=1 TO 15
+PULSOUT 12, 700
+PULSOUT 13, 700
+PAUSE 20
+NEXT
+GOSUB FWD
+
+Right90:
+FOR x=1 TO 15
+PULSOUT 12, 800
+PULSOUT 13, 800
+PAUSE 20
+NEXT
+GOSUB FWD

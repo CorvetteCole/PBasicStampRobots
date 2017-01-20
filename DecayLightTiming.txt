@@ -1,0 +1,5 @@
+tLeft dark= 400<x<700
+tRight dark= 200<x<400
+
+tLeft light= 0<x<100
+tRight light= 0<x<100

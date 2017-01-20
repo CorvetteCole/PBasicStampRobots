@@ -4,7 +4,7 @@
 tLeft          VAR     Word
 tRight         VAR     Word
 
-PAUSE 1000
+
 
 DO
 
@@ -18,6 +18,10 @@ DO
 
   ' Display result
   DEBUG HOME, "tLeft = ", DEC5 tLeft, "  ", "tRight = ", DEC5 tRight
+  IF (0<tLeft) AND (tLeft<5) THEN HIGH 1
+  IF (0<tRight) AND (tRight<5) THEN HIGH 0
+  IF (20<tLeft) AND (tLeft<700) THEN LOW 1
+  IF (20<tRight) AND (tRight<400) THEN LOW 0
   PAUSE 100
 
 LOOP
