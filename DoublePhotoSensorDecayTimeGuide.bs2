@@ -3,10 +3,11 @@
 tLeft VAR Word
 tRight VAR Word
 x VAR Word
+y VAR Word
 FWD:
 DO
   PULSOUT 12, 650                            '12 is right motor, 13 is left
-  PULSOUT 13, 830
+  PULSOUT 13, 837
   HIGH 6
   PAUSE 1
   RCTIME 6, 1, tLeft
@@ -15,22 +16,26 @@ DO
   PAUSE 1
   RCTIME 3, 1, tRight
 
-  IF (0<tLeft) AND (tLeft<5) THEN GOSUB Left90
-  IF (0<tRight) AND (tRight<5) THEN GOSUB Right90
+  IF (0<tLeft) AND (tLeft<20) THEN GOSUB Left
+  IF (0<tRight) AND (tRight<20) THEN GOSUB Right
+  'IF (40<tLeft) AND (tLeft<60) AND (30<tRight) AND (tRight<50) THEN GOSUB Backup
+
 LOOP
 
-Left90:
-FOR x=1 TO 15
-PULSOUT 12, 700
-PULSOUT 13, 700
+Left:
+FOR x=1 TO 5
+PULSOUT 12, 650
+PULSOUT 13, 760
 PAUSE 20
 NEXT
 GOSUB FWD
 
-Right90:
-FOR x=1 TO 15
-PULSOUT 12, 800
-PULSOUT 13, 800
+Right:
+FOR x=1 TO 5
+PULSOUT 12, 740
+PULSOUT 13, 850
 PAUSE 20
 NEXT
 GOSUB FWD
+
+'Backup:
