@@ -4,6 +4,7 @@ tLeft VAR Word
 tRight VAR Word
 x VAR Word
 y VAR Word
+z VAR Word
 FWD:
 DO
   PULSOUT 12, 650                            '12 is right motor, 13 is left
@@ -18,7 +19,7 @@ DO
 
   IF (0<tLeft) AND (tLeft<20) THEN GOSUB Left
   IF (0<tRight) AND (tRight<20) THEN GOSUB Right
-  'IF (40<tLeft) AND (tLeft<60) AND (30<tRight) AND (tRight<50) THEN GOSUB Backup
+  'IF (50<tLeft) AND (tLeft<70) AND (40<tRight) AND (tRight<60) THEN GOSUB Backup     'Remove the apostrophe to activate backup code. Be warned this has a significant margin of error and could cause random reverses.
 
 LOOP
 
@@ -38,4 +39,25 @@ PAUSE 20
 NEXT
 GOSUB FWD
 
-'Backup:
+Backup:
+FOR x=1 TO 20
+PULSOUT 12, 850
+PULSOUT 13, 650
+PAUSE 20
+NEXT
+y=0
+z=0
+GOSUB Wait4Cmd
+
+Wait4CMD:
+DO
+  HIGH 6
+  PAUSE 1
+  RCTIME 6, 1, tLeft
+
+  HIGH 3
+  PAUSE 1
+  RCTIME 3, 1, tRight
+  IF (0<tLeft) AND (tLeft<20) THEN GOSUB Left
+  IF (0<tRight) AND (tRight<20) THEN GOSUB Right
+LOOP
