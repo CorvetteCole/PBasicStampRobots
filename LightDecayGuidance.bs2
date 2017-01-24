@@ -3,8 +3,6 @@
 tLeft VAR Word
 tRight VAR Word
 x VAR Word
-y VAR Word
-z VAR Word
 FWD:
 DO
   PULSOUT 12, 650                            '12 is right motor, 13 is left
@@ -45,8 +43,6 @@ PULSOUT 12, 850
 PULSOUT 13, 650
 PAUSE 20
 NEXT
-y=0
-z=0
 GOSUB Wait4Cmd
 
 Wait4CMD:
