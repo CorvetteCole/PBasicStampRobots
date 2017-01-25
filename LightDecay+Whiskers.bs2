@@ -6,10 +6,18 @@ tRight VAR Word
 tLeft VAR Word
 FWD:
 DO
-PULSOUT 12, 650                                 '12 is right motor, 13 is left
-PULSOUT 13, 830
-PAUSE 20
-IF (IN5 = 0) AND (IN7 = 0) THEN GOSUB Right90    'IN5 is the left whisker, IN7 the right
+ PULSOUT 12, 650                                 '12 is right motor, 13 is left
+ PULSOUT 13, 830
+ HIGH 6
+ PAUSE 1
+ RCTIME 6, 1, tLeft
+
+ HIGH 3
+ PAUSE 1
+ RCTIME 3, 1, tRight
+ IF (IN5 = 0) AND (IN7 = 0) THEN GOSUB Right90    'IN5 is the left whisker, IN7 the right
+ IF (0<tLeft) AND (tLeft<20) THEN GOSUB Left
+ IF (0<tRight) AND (tRight<20) THEN GOSUB Right
 LOOP
 
 Right90:
@@ -54,29 +62,6 @@ PULSOUT 13, 700
 PAUSE 20
 NEXT
 GOSUB FWD
-
-
-
-            'all code under this is for light decay
-
-
-
-
-LightSensing:                                'placeholder code to help with future development
-DO
-  PULSOUT 12, 650
-  PULSOUT 13, 837
-  HIGH 6
-  PAUSE 1
-  RCTIME 6, 1, tLeft
-
-  HIGH 3
-  PAUSE 1
-  RCTIME 3, 1, tRight
-
-  IF (0<tLeft) AND (tLeft<20) THEN GOSUB Left
-  IF (0<tRight) AND (tRight<20) THEN GOSUB Right
-LOOP
 
 Left:
 FOR x=1 TO 5
