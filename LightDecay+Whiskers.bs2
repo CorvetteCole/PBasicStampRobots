@@ -1,6 +1,9 @@
 ' {$STAMP BS2}
 ' {$PBASIC 2.5}
 x VAR Word
+y VAR Word
+tRight VAR Word
+tLeft VAR Word
 FWD:
 DO
 PULSOUT 12, 650                                 '12 is right motor, 13 is left
@@ -21,7 +24,43 @@ PULSOUT 12, 800
 PULSOUT 13, 800
 PAUSE 20
 NEXT
+GOSUB LeftFWD
+
+LeftFWD:
+DO
+PULSOUT 12, 650
+PULSOUT 13, 785              'Adjusts turning rate of left motor to be slower so it brushes against the side continously
+PAUSE 20
+IF (IN5 = 0) THEN EXIT
+IF (IN5 = 1) THEN y=y+1
+IF (y=60) THEN GOSUB Left90
+LOOP
+y=0
+GOSUB Straighten
+
+Straighten:
+IF (IN7 = 0) THEN GOSUB Right90
+FOR x=1 TO 15
+PULSOUT 12, 760
+PULSOUT 13, 780
+PAUSE 20
+NEXT
+GOSUB LeftFWD
+
+Left90:
+FOR X=1 TO 10
+PULSOUT 12, 700
+PULSOUT 13, 700
+PAUSE 20
+NEXT
 GOSUB FWD
+
+
+
+            'all code under this is for light decay
+
+
+
 
 LightSensing:                                'placeholder code to help with future development
 DO
@@ -38,3 +77,19 @@ DO
   IF (0<tLeft) AND (tLeft<20) THEN GOSUB Left
   IF (0<tRight) AND (tRight<20) THEN GOSUB Right
 LOOP
+
+Left:
+FOR x=1 TO 5
+PULSOUT 12, 650
+PULSOUT 13, 760
+PAUSE 20
+NEXT
+GOSUB FWD
+
+Right:
+FOR x=1 TO 5
+PULSOUT 12, 740
+PULSOUT 13, 850
+PAUSE 20
+NEXT
+GOSUB FWD
