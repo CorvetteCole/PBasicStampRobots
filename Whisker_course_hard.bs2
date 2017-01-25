@@ -12,8 +12,8 @@ PAUSE 20
 IF (IN5 = 0) AND (IN7 = 0) THEN EXIT    'IN5 is the left whisker, IN7 the right
 LOOP
 IF (a<100) THEN a=a+1
-IF (a=3) OR (a=4) THEN GOSUB Left90
-IF (a=0) OR (a=1) OR (a=2) THEN GOSUB Right90
+IF (a=3) THEN GOSUB Left90
+IF (a=0) OR (a=1) OR (a=2) OR (a=4) THEN GOSUB Right90
 
 Right90:
 IF (a=0) OR (a=1) OR (a=2) OR (a=4) THEN
