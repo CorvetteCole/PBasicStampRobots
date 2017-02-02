@@ -2,25 +2,64 @@
 ' {$PBASIC 2.5}
 x VAR Word
 y VAR Word
-tRight VAR Word
 tLeft VAR Word
+tRight VAR Word
+WhskTmeRt VAR Word
+WhskTmeLt VAR Word
+WhskTmeRt=0
+WhskTmeLt=0
+y=0
+
+Straight:
+DO
+  PULSOUT 12, 650                            '12 is right motor, 13 is left
+  PULSOUT 13, 825
+  PAUSE 5
+  IF (IN5 = 0) AND (IN7 = 0) AND (y=0) THEN GOSUB Right90
+  IF (IN5 = 0) AND (IN7 = 0) AND (y=1) OR (y=2) THEN GOSUB Left90
+  HIGH 6
+  PAUSE 1
+  RCTIME 6, 1, tLeft
+
+  HIGH 3
+  PAUSE 1
+  RCTIME 3, 1, tRight
+
+
+  IF (IN5 = 0) AND (IN7 = 1) THEN WhskTmeRt=WhskTmeRt+1                'in5 left whisker
+  IF (IN7 = 0) AND (IN5 = 1) THEN WhskTmeLt=WhskTmeLt+1
+  IF (WhskTmeRt=10) THEN GOSUB StraightenLeft
+  IF (WhskTmeLt=10) THEN GOSUB StraightenRight
+  'IF (0<tLeft) AND (tLeft<65) AND (0<tRight) AND (tRight<65) THEN GOSUB LeftALot          'plan is to calibrate the sensors to a certain light on the course
+LOOP
+
 FWD:
 DO
- PULSOUT 12, 650                                 '12 is right motor, 13 is left
- PULSOUT 13, 830
- HIGH 6
- PAUSE 1
- RCTIME 6, 1, tLeft
+  PULSOUT 12, 650                            '12 is right motor, 13 is left
+  PULSOUT 13, 800
+  PAUSE 5
+  IF (IN5 = 0) AND (IN7 = 0) AND (y=0) THEN GOSUB Right90
+  IF (IN5 = 0) AND (IN7 = 0) AND (y=1) OR (y=2) THEN GOSUB Left90
+  HIGH 6
+  PAUSE 1
+  RCTIME 6, 1, tLeft
 
- HIGH 3
- PAUSE 1
- RCTIME 3, 1, tRight
- IF (IN5 = 0) AND (IN7 = 0) THEN GOSUB Right90    'IN5 is the left whisker, IN7 the right
- IF (0<tLeft) AND (tLeft<20) THEN GOSUB Left
- IF (0<tRight) AND (tRight<20) THEN GOSUB Right
+  HIGH 3
+  PAUSE 1
+  RCTIME 3, 1, tRight
+
+
+  IF (IN5 = 0) AND (IN7 = 1) THEN WhskTmeRt=WhskTmeRt+1                'in5 left whisker
+  IF (IN7 = 0) AND (IN5 = 1) THEN WhskTmeLt=WhskTmeLt+1
+  IF (WhskTmeRt=10) THEN GOSUB StraightenRight
+  IF (WhskTmeLt=10) THEN GOSUB StraightenLeft
+  'IF (0<tLeft) AND (tLeft<65) AND (0<tRight) AND (tRight<65) THEN GOSUB LeftALot          'plan is to calibrate the sensors to a certain light on the course
 LOOP
 
 Right90:
+WhskTmeRt=0
+WhskTmeLt=0
+y=1
 FOR x=1 TO 10
 PULSOUT 12, 800
 PULSOUT 13, 700
@@ -30,51 +69,55 @@ PAUSE 50
 FOR X=1 TO 16
 PULSOUT 12, 800
 PULSOUT 13, 800
-PAUSE 20
+PAUSE 27
 NEXT
-GOSUB LeftFWD
+GOSUB FWD
 
-LeftFWD:
-DO
-PULSOUT 12, 650
-PULSOUT 13, 785              'Adjusts turning rate of left motor to be slower so it brushes against the side continously
-PAUSE 20
-IF (IN5 = 0) THEN EXIT
-IF (IN5 = 1) THEN y=y+1
-IF (y=60) THEN GOSUB Left90
-LOOP
-y=0
-GOSUB Straighten
-
-Straighten:
-IF (IN7 = 0) THEN GOSUB Right90
+StraightenRight:
+WhskTmeRt=0
 FOR x=1 TO 15
 PULSOUT 12, 760
 PULSOUT 13, 780
 PAUSE 20
 NEXT
-GOSUB LeftFWD
+GOSUB FWD
+
+StraightenLeft:
+WhskTmeLt=0
+FOR x=1 TO 15
+PULSOUT 12, 720
+PULSOUT 13, 740
+PAUSE 20
+NEXT
+GOSUB FWD
 
 Left90:
-FOR X=1 TO 10
-PULSOUT 12, 700
+WhskTmeRt=0
+WhskTmeLt=0
+IF (0<tLeft) AND (tLeft<65) AND (0<tRight) AND (tRight<65) THEN GOSUB LeftALot
+FOR x=1 TO 16
+PULSOUT 12, 800
 PULSOUT 13, 700
 PAUSE 20
 NEXT
-GOSUB FWD
+PAUSE 50
+FOR X=1 TO 15
+PULSOUT 12, 700
+PULSOUT 13, 700
+PAUSE 25
+NEXT
+GOSUB Straight
 
-Left:
-FOR x=1 TO 5
-PULSOUT 12, 650
-PULSOUT 13, 760
+LeftALot:
+FOR x=1 TO 16
+PULSOUT 12, 800
+PULSOUT 13, 700
 PAUSE 20
 NEXT
-GOSUB FWD
-
-Right:
-FOR x=1 TO 5
-PULSOUT 12, 740
-PULSOUT 13, 850
-PAUSE 20
+PAUSE 50
+FOR x=1 TO 27
+PULSOUT 12, 700
+PULSOUT 13, 700
+PAUSE 21
 NEXT
-GOSUB FWD
+GOSUB Straight
