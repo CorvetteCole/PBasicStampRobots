@@ -1,0 +1,125 @@
+' {$STAMP BS2}
+' {$PBASIC 2.5}
+x VAR Word
+y VAR Word
+z VAR Word
+tLeft VAR Word
+tRight VAR Word
+WhskTmeRt VAR Word
+WhskTmeLt VAR Word
+WhskTmeRt=0
+WhskTmeLt=0
+y=0
+z=0
+
+FWD:
+DO
+  PULSOUT 12, 650                            '12 is right motor, 13 is left
+  PULSOUT 13, 830
+  PAUSE 5
+  IF (IN5 = 0) AND (IN7 = 0) AND (y=0) THEN GOSUB Right90
+  IF (IN5 = 0) AND (IN7 = 0) AND (y=1) THEN GOSUB Left90
+
+  HIGH 6
+  PAUSE 1
+  RCTIME 6, 1, tLeft
+
+  HIGH 3
+  PAUSE 1
+  RCTIME 3, 1, tRight
+
+  IF (IN5 = 0) AND (IN7 = 1) THEN WhskTmeLt=WhskTmeLt+1                'in5 left whisker
+  IF (IN7 = 0) AND (IN5 = 1) THEN WhskTmeRt=WhskTmeRt+1
+  IF (WhskTmeRt=10) THEN GOSUB StraightenLeft
+  IF (WhskTmeLt=10) THEN GOSUB StraightenRight
+  IF (0<tLeft) AND (tLeft<80) AND (z=0) THEN GOSUB Right
+  IF (0<tRight) AND (tRight<80) AND (z=0) THEN GOSUB Left
+
+LOOP
+
+StraightenRight:
+WhskTmeLt=0
+WhskTmeRt=0
+FOR x=1 TO 15
+PULSOUT 12, 750
+PULSOUT 13, 800
+PAUSE 20
+NEXT
+GOSUB FWD
+
+StraightenLeft:
+WhskTmeRt=0
+WhskTmeLt=0
+FOR x=1 TO 15
+PULSOUT 12, 700
+PULSOUT 13, 750
+PAUSE 20
+NEXT
+GOSUB FWD
+
+Right90:
+WhskTmeRt=0
+WhskTmeLt=0
+z=0
+y=1
+FOR x=1 TO 10
+PULSOUT 12, 800
+PULSOUT 13, 700
+PAUSE 20
+NEXT
+PAUSE 50
+FOR X=1 TO 16
+PULSOUT 12, 800
+PULSOUT 13, 800
+PAUSE 20
+NEXT
+GOSUB FWD
+
+Left:
+FOR x=1 TO 10
+PULSOUT 12, 650
+PULSOUT 13, 760
+PAUSE 20
+NEXT
+GOSUB FWD
+
+Right:
+FOR x=1 TO 10
+PULSOUT 12, 740
+PULSOUT 13, 850
+PAUSE 20
+NEXT
+GOSUB FWD
+
+Left90:
+z=0
+WhskTmeRt=0
+WhskTmeLt=0
+IF (0<tLeft) AND (tLeft<65) AND (0<tRight) AND (tRight<65) THEN GOSUB LeftALot
+FOR x=1 TO 16
+PULSOUT 12, 800
+PULSOUT 13, 700
+PAUSE 20
+NEXT
+PAUSE 50
+FOR X=1 TO 15
+PULSOUT 12, 700
+PULSOUT 13, 700
+PAUSE 25
+NEXT
+GOSUB FWD
+
+LeftALot:
+z=1
+FOR x=1 TO 16
+PULSOUT 12, 800
+PULSOUT 13, 700
+PAUSE 20
+NEXT
+PAUSE 50
+FOR x=1 TO 27
+PULSOUT 12, 700
+PULSOUT 13, 700
+PAUSE 21
+NEXT
+GOSUB FWD

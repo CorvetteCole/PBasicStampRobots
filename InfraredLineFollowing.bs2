@@ -1,0 +1,34 @@
+' {$STAMP BS2}
+' {$PBASIC 2.5}
+
+DO
+  SELECT INL
+    CASE %11000000, %11100000                 ' Pivot right
+      PULSOUT 13, 650                                                '12 is right motor
+      PULSOUT 12, 650
+    CASE %01100000, %01110000                 ' Curve right
+      PULSOUT 13, 700
+      PULSOUT 12, 650
+    CASE %00110000                            ' Slight right
+      PULSOUT 13, 750
+      PULSOUT 12, 650
+    CASE %00111000                            ' Adjust right
+      PULSOUT 13, 800
+      PULSOUT 12, 650
+    CASE %00011000                            ' Straight
+      PULSOUT 13, 850
+      PULSOUT 12, 650
+    CASE %00011100                            ' Adjust left
+      PULSOUT 13, 850
+      PULSOUT 12, 700
+    CASE %00001100                            ' Slight left
+      PULSOUT 13, 850
+      PULSOUT 12, 750
+    CASE %00000110, %00001110                 ' Curve left
+      PULSOUT 13, 850
+      PULSOUT 12, 800
+    CASE %00000011, %00000111                 ' Pivot left
+      PULSOUT 13, 850
+      PULSOUT 12, 850
+  ENDSELECT
+LOOP

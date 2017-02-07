@@ -17,7 +17,7 @@ DO
   RCTIME 3, 1, tRight
 
   ' Display result
-  DEBUG HOME, "tLeft = ", DEC5 tLeft, "  ", "tRight = ", DEC5 tRight
+  DEBUG HOME, "tLeft = " , DEC5 tLeft , " tRight = ", DEC5 tRight
   IF (0<tLeft) AND (tLeft<5) THEN HIGH 1
   IF (0<tRight) AND (tRight<5) THEN HIGH 0
   IF (20<tLeft) AND (tLeft<700) THEN LOW 1

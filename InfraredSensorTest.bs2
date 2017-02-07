@@ -1,0 +1,8 @@
+' {$STAMP BS2}
+' {$PBASIC 2.5}
+State VAR Word
+
+do
+  state = inl
+  DEBUG HOME, "state = %", BIN8 state
+loop
