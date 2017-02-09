@@ -2,7 +2,7 @@
 ' {$PBASIC 2.5}
 State VAR Word
 
-do
-  state = inl
+DO
+  state = INL
   DEBUG HOME, "state = %", BIN8 state
-loop
+LOOP
