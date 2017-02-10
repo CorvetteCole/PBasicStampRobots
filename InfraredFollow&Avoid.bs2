@@ -17,13 +17,7 @@ DO
     CASE %00111000                            ' Adjust right
       PULSOUT 13, 800
       PULSOUT 12, 650
-    CASE %00011000                            ' Straight
-      PULSOUT 13, 850
-      PULSOUT 12, 650
-    CASE %00010000
-      PULSOUT 13, 850
-      PULSOUT 12, 650
-    CASE %00001000
+    CASE %00011000, %00001000, %00010000                            ' Straight
       PULSOUT 13, 850
       PULSOUT 12, 650
     CASE %00011100                            ' Adjust left
@@ -44,13 +38,14 @@ DO
 LOOP
 
 Avoidance:
-FOR x=1 TO 15
+FOR x=1 TO 30
  PULSOUT 13, 850
  PULSOUT 12, 650
  PAUSE 20
 NEXT
-
 DO
+  PULSOUT 13, 850
+  PULSOUT 12, 650
   SELECT INL
     CASE %11000000, %01000000, %01100000, %00100000                 ' Left line avoid
       PULSOUT 13, 850                                                      '12 is right motor
@@ -58,16 +53,24 @@ DO
     CASE %10000000
       PULSOUT 13, 850
       PULSOUT 12, 750
-    CASE %00000000                            ' Straight
-      PULSOUT 13, 850
-      PULSOUT 12, 650
     CASE %00000001
       PULSOUT 13, 750
       PULSOUT 12, 650
     CASE %00000011, %00000010, %00000110, %00000100                  ' Right line avoid
       PULSOUT 13, 750
       PULSOUT 12, 650
-    CASE %11111111
+    CASE %11111111, %10000001, %11000011, %11110000, %00001111, %11111100, %00111111
+      GOSUB FindLine
+
+  ENDSELECT
+LOOP
+
+FindLine:
+DO
+  PULSOUT 13, 850
+  PULSOUT 12, 720
+  SELECT INL
+    CASE %00011000, %00001000, %00010000
       GOSUB Follow
   ENDSELECT
 LOOP
