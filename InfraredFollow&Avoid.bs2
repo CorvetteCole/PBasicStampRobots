@@ -11,18 +11,18 @@ DO
     CASE %01100000, %01110000                 ' Curve right
       PULSOUT 13, 700
       PULSOUT 12, 650
-    CASE %00110000                            ' Slight right
+    CASE %00110000, %00100000                 ' Slight right
       PULSOUT 13, 750
       PULSOUT 12, 650
     CASE %00111000                            ' Adjust right
-      PULSOUT 13, 800
+      PULSOUT 13, 780
       PULSOUT 12, 650
     CASE %00011000, %00001000, %00010000                            ' Straight
       PULSOUT 13, 850
       PULSOUT 12, 650
     CASE %00011100                            ' Adjust left
       PULSOUT 13, 850
-      PULSOUT 12, 700
+      PULSOUT 12, 730
     CASE %00001100                            ' Slight left
       PULSOUT 13, 850
       PULSOUT 12, 750
@@ -60,7 +60,7 @@ DO
       PULSOUT 13, 750
       PULSOUT 12, 650
     CASE %11111111, %10000001, %11000011, %11110000, %00001111, %11111100, %00111111
-      GOSUB FindLine  
+      GOSUB FindLine
   ENDSELECT
 LOOP
 
