@@ -1,0 +1,117 @@
+' {$STAMP BS2}
+' {$PBASIC 2.5}
+x VAR Word
+
+Avoidance:
+DO
+  PULSOUT 13, 850
+  PULSOUT 12, 650
+  SELECT INL
+    CASE %11000000, %01000000, %01100000, %00100000                 ' Left line avoid
+      PULSOUT 13, 850                                                      '12 is right motor
+      PULSOUT 12, 750
+    CASE %10000000
+      PULSOUT 13, 850
+      PULSOUT 12, 750
+    CASE %00000001
+      PULSOUT 13, 750
+      PULSOUT 12, 650
+    CASE %00000011, %00000010, %00000110, %00000100                  ' Right line avoid
+      PULSOUT 13, 750
+      PULSOUT 12, 650
+    CASE %11100000                'Trigger left turn
+      GOSUB Left90
+    CASE %00000111                'Trigger right turn
+      GOSUB Right90
+    CASE placeholder              'Trigger 180 degree turn upon hitting arrow
+      GOSUB 180Deg
+    'CASE %00000000  Placeholder to be replaced in future
+     ' GOSUB FindLine
+  ENDSELECT
+LOOP
+
+180Deg:
+FOR x=1 TO 7
+ PULSOUT 13, 850
+ PULSOUT 12, 650
+ PAUSE 20
+next
+FOR x=1 TO 30
+ PULSOUT 13, 750
+ PULSOUT 12, 650
+ PAUSE 20
+next
+GOSUB Avoidance
+
+ Right90:
+FOR x=1 TO 15
+ PULSOUT 13, 850
+ PULSOUT 12, 650
+ PAUSE 20
+next
+FOR x=1 TO 16
+ PULSOUT 13, 750
+ PULSOUT 12, 650
+ PAUSE 20
+next
+GOSUB Avoidance
+
+Left90:
+FOR x=1 TO 15
+ PULSOUT 13, 850
+ PULSOUT 12, 650
+ PAUSE 20
+next
+FOR x=1 TO 16
+ PULSOUT 13, 850
+ PULSOUT 12, 750
+ PAUSE 20
+NEXT
+GOSUB Avoidance
+
+
+Follow:
+DO
+  SELECT INL
+    CASE %11000000, %11100000                 ' Pivot right
+      PULSOUT 13, 650                                                '12 is right motor
+      PULSOUT 12, 650
+    CASE %01100000, %01110000                 ' Curve right
+      PULSOUT 13, 700
+      PULSOUT 12, 650
+    CASE %00110000, %00100000                 ' Slight right
+      PULSOUT 13, 750
+      PULSOUT 12, 650
+    CASE %00111000                            ' Adjust right
+      PULSOUT 13, 780
+      PULSOUT 12, 650
+    CASE %00011000, %00001000, %00010000                            ' Straight
+      PULSOUT 13, 850
+      PULSOUT 12, 650
+    CASE %00011100                            ' Adjust left
+      PULSOUT 13, 850
+      PULSOUT 12, 730
+    CASE %00001100                            ' Slight left
+      PULSOUT 13, 850
+      PULSOUT 12, 750
+    CASE %00000110, %00001110                 ' Curve left
+      PULSOUT 13, 850
+      PULSOUT 12, 800
+    CASE %00000011, %00000111                 ' Pivot left
+      PULSOUT 13, 850
+      PULSOUT 12, 850
+    'CASE %00000000 Placeholder to be replaced in future
+     ' GOSUB Avoidance
+  ENDSELECT
+LOOP
+
+FindLine:
+DO
+  PULSOUT 13, 850
+  PULSOUT 12, 650
+  SELECT INL
+    CASE %00011000, %00001000, %00010000
+      GOSUB Follow
+  ENDSELECT
+LOOP
+

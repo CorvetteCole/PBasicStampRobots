@@ -1,0 +1,13 @@
+' {$STAMP BS2}
+' {$PBASIC 2.5}
+state VAR Byte
+
+DO
+ state = IN6                 'if pin6 is active turn light on
+ DEBUG HOME, "state = %", BIN8 state
+ IF (IN7 = %0) THEN
+  HIGH 8
+ ELSE
+  LOW 8
+ ENDIF
+LOOP
