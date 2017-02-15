@@ -2,6 +2,8 @@
 ' {$PBASIC 2.5}
 x VAR Word
 
+'TO DO: Adjust the switch from avoid to follow subroutines so that the code isn't hung up by the block meant for switching
+
 Avoidance:
 DO
   PULSOUT 13, 850
@@ -29,14 +31,25 @@ DO
       GOSUB Left90
     CASE %00000111                'Trigger right turn
       GOSUB Right90
-    CASE placeholder              'Trigger 180 degree turn upon hitting arrow
-      GOSUB 180Deg
-    'CASE %00000000  Placeholder to be replaced in future
-     ' GOSUB FindLine
+    'CASE placeholder              'Trigger 180 degree turn upon hitting arrow
+      'GOSUB Deg180
+
+    IF (IN3 = %1) OR (IN4 = %1) THEN   'Switch to follow code
+     GOSUB Follow
+    ENDIF
+
   ENDSELECT
 LOOP
 
-180Deg:
+ToEnd:
+FOR x=1 TO 20
+ PULSOUT 13, 850
+ PULSOUT 12, 650
+ PAUSE 20
+NEXT
+GOSUB FlashyLights
+
+Deg180:
 FOR x=1 TO 7
  PULSOUT 13, 850
  PULSOUT 12, 650
@@ -106,12 +119,15 @@ DO
     CASE %00000011, %00000111                 ' Pivot left
       PULSOUT 13, 850
       PULSOUT 12, 850
-    'CASE %00000000 Placeholder to be replaced in future
-     ' GOSUB Avoidance
+
+    IF (IN3 = %0) AND (IN4 = %0) THEN   'Switch to avoidance code
+     GOSUB Avoidance
+    ENDIF
+
   ENDSELECT
 LOOP
 
-FindLine:
+FindLine:                      'This subroutine should be irrelevant unless if statements don't work right
 DO
   PULSOUT 13, 850
   PULSOUT 12, 650
@@ -121,3 +137,14 @@ DO
   ENDSELECT
 LOOP
 
+FlashyLights:
+DO
+ PAUSE 100
+ HIGH 8
+ PAUSE 100
+ LOW 9
+ PAUSE 100
+ HIGH 9
+ PAUSE 100
+ LOW 8
+LOOP
