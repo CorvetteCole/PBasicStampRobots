@@ -6,6 +6,12 @@ Avoidance:
 DO
   PULSOUT 13, 850
   PULSOUT 12, 650
+
+  'IF (INX = %1) THEN   'X represents breadboard pin referring to whatever sensor chosen
+   'gosub something
+  'ENDIF
+
+
   SELECT INL
     CASE %11000000, %01000000, %01100000, %00100000                 ' Left line avoid
       PULSOUT 13, 850                                                      '12 is right motor
@@ -35,12 +41,12 @@ FOR x=1 TO 7
  PULSOUT 13, 850
  PULSOUT 12, 650
  PAUSE 20
-next
+NEXT
 FOR x=1 TO 30
  PULSOUT 13, 750
  PULSOUT 12, 650
  PAUSE 20
-next
+NEXT
 GOSUB Avoidance
 
  Right90:
@@ -48,12 +54,12 @@ FOR x=1 TO 15
  PULSOUT 13, 850
  PULSOUT 12, 650
  PAUSE 20
-next
+NEXT
 FOR x=1 TO 16
  PULSOUT 13, 750
  PULSOUT 12, 650
  PAUSE 20
-next
+NEXT
 GOSUB Avoidance
 
 Left90:
@@ -61,7 +67,7 @@ FOR x=1 TO 15
  PULSOUT 13, 850
  PULSOUT 12, 650
  PAUSE 20
-next
+NEXT
 FOR x=1 TO 16
  PULSOUT 13, 850
  PULSOUT 12, 750
