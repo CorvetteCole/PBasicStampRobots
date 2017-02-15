@@ -2,7 +2,7 @@
 ' {$PBASIC 2.5}
 x VAR Word
 
-'TO DO: Adjust the switch from avoid to follow subroutines so that the code isn't hung up by the block meant for switching
+'TO DO: Adjust the switch from follow to avoid subroutines so that the code isn't hung up by the block meant for switching
 
 Avoidance:
 DO
@@ -35,7 +35,7 @@ DO
       'GOSUB Deg180
 
     IF (IN3 = %1) OR (IN4 = %1) THEN   'Switch to follow code
-     GOSUB Follow
+     GOSUB ActivateFollow
     ENDIF
 
   ENDSELECT
@@ -127,13 +127,13 @@ DO
   ENDSELECT
 LOOP
 
-FindLine:                      'This subroutine should be irrelevant unless if statements don't work right
+ActivateFollow:
 DO
-  PULSOUT 13, 850
-  PULSOUT 12, 650
+ PULSOUT 13, 850
+ PULSOUT 12, 650
   SELECT INL
-    CASE %00011000, %00001000, %00010000
-      GOSUB Follow
+   CASE %00010000, %00001000, %00011000
+    GOSUB follow
   ENDSELECT
 LOOP
 
