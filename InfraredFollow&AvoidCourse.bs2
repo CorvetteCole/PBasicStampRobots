@@ -1,21 +1,22 @@
 ' {$STAMP BS2}
 ' {$PBASIC 2.5}
 x VAR Word
+y VAR Word
+y=0
+'REMOVE PAUSES IN TURNS BEFORE TIMING
 
-'TO DO: Adjust the switch from follow to avoid subroutines so that the code isn't hung up by the block meant for switching
+
+'IF (INX = %0) THEN   'X represents breadboard pin referring to whatever sensor chosen.
+   'gosub something
+  'ENDIF
 
 Avoidance:
 DO
   PULSOUT 13, 850
   PULSOUT 12, 650
 
-  'IF (INX = %1) THEN   'X represents breadboard pin referring to whatever sensor chosen
-   'gosub something
-  'ENDIF
-
-
   SELECT INL
-    CASE %11000000, %01000000, %01100000, %00100000                 ' Left line avoid
+    CASE %11000000, %01100000, %00100000                 ' Left line avoid
       PULSOUT 13, 850                                                      '12 is right motor
       PULSOUT 12, 750
     CASE %10000000
@@ -24,21 +25,24 @@ DO
     CASE %00000001
       PULSOUT 13, 750
       PULSOUT 12, 650
-    CASE %00000011, %00000010, %00000110, %00000100                  ' Right line avoid
+    CASE %00000011, %00000110, %00000100                  ' Right line avoid
       PULSOUT 13, 750
       PULSOUT 12, 650
-    CASE %11100000                'Trigger left turn
-      GOSUB Left90
-    CASE %00000111                'Trigger right turn
-      GOSUB Right90
-    'CASE placeholder              'Trigger 180 degree turn upon hitting arrow
-      'GOSUB Deg180
+  ENDSELECT
 
-    IF (IN3 = %1) OR (IN4 = %1) THEN   'Switch to follow code
+    IF (IN7 = %1) AND (IN6 = %1) THEN GOSUB Left90                  'Trigger left turn
+    IF (IN0 = %1) AND (IN1 = %1) THEN GOSUB Right90                 'Trigger right turn
+    IF (y = 3) THEN GOSUB ToEnd                                     'Activates ending subroutine when the code is read
+
+    IF (IN3 = %1) AND (IN4 = %1) AND (IN1 = %1) AND (IN6 = %1) THEN   'ARROW DETECTION CODE           Trigger 180 degree turn upon hitting arrow
+     GOSUB Deg180
+    endif
+
+    IF (IN3 = %1) OR (IN4 = %1) AND (IN1 = %0) AND (IN6 = %0) THEN   'Switch to follow code. The in1 and in6 with and statement is meant to prevent false activation by an arrow
      GOSUB ActivateFollow
     ENDIF
 
-  ENDSELECT
+
 LOOP
 
 ToEnd:
@@ -50,44 +54,79 @@ NEXT
 GOSUB FlashyLights
 
 Deg180:
-FOR x=1 TO 7
+FOR x=1 TO 9
  PULSOUT 13, 850
  PULSOUT 12, 650
  PAUSE 20
 NEXT
-FOR x=1 TO 30
- PULSOUT 13, 750
- PULSOUT 12, 650
- PAUSE 20
-NEXT
-GOSUB Avoidance
-
- Right90:
-FOR x=1 TO 15
- PULSOUT 13, 850
- PULSOUT 12, 650
- PAUSE 20
-NEXT
-FOR x=1 TO 16
- PULSOUT 13, 750
- PULSOUT 12, 650
- PAUSE 20
-NEXT
-GOSUB Avoidance
-
-Left90:
-FOR x=1 TO 15
- PULSOUT 13, 850
- PULSOUT 12, 650
- PAUSE 20
-NEXT
-FOR x=1 TO 16
+PAUSE 1000
+FOR x=1 TO 60
  PULSOUT 13, 850
  PULSOUT 12, 750
  PAUSE 20
 NEXT
 GOSUB Avoidance
 
+Right90:
+FOR x=1 TO 9
+ PULSOUT 13, 850
+ PULSOUT 12, 650
+ PAUSE 20
+NEXT
+PAUSE 1000
+FOR x=1 TO 15
+ PULSOUT 13, 850
+ PULSOUT 12, 850
+ PAUSE 20
+NEXT
+GOSUB Avoidance
+
+Left90:
+FOR x=1 TO 9
+ PULSOUT 13, 850
+ PULSOUT 12, 650
+ PAUSE 20
+NEXT
+PAUSE 1000
+FOR x=1 TO 15
+ PULSOUT 13, 650
+ PULSOUT 12, 650
+ PAUSE 20
+NEXT
+GOSUB Avoidance
+
+ActivateFollow:
+y=y+1     'Adds 1 to y everytime the middle sensors are activated initially. This will happen when going across the ending code, allowing that to be read
+DO
+ PULSOUT 13, 850
+ PULSOUT 12, 650
+  SELECT INL
+   CASE %00010000, %00001000, %00011000
+    GOSUB Follow
+  ENDSELECT
+LOOP
+
+ActivateAvoidance:
+DO
+ PULSOUT 13, 850
+ PULSOUT 12, 650
+  SELECT INL
+   CASE %10000000, %00000001, %00000000, %10000001
+    GOSUB Avoidance
+  ENDSELECT
+LOOP
+
+FlashyLights:
+DO
+ PAUSE 100
+ HIGH 8
+ PAUSE 100
+ LOW 9
+ PAUSE 100
+ HIGH 9
+ PAUSE 100
+ LOW 8
+LOOP
 
 Follow:
 DO
@@ -119,32 +158,7 @@ DO
     CASE %00000011, %00000111                 ' Pivot left
       PULSOUT 13, 850
       PULSOUT 12, 850
-
-    IF (IN3 = %0) AND (IN4 = %0) THEN   'Switch to avoidance code
-     GOSUB Avoidance
-    ENDIF
-
+    CASE %00000000
+      GOSUB ActivateAvoidance
   ENDSELECT
-LOOP
-
-ActivateFollow:
-DO
- PULSOUT 13, 850
- PULSOUT 12, 650
-  SELECT INL
-   CASE %00010000, %00001000, %00011000
-    GOSUB follow
-  ENDSELECT
-LOOP
-
-FlashyLights:
-DO
- PAUSE 100
- HIGH 8
- PAUSE 100
- LOW 9
- PAUSE 100
- HIGH 9
- PAUSE 100
- LOW 8
 LOOP
