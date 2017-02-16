@@ -35,11 +35,46 @@ DO
     IF (IN3 = %1) OR (IN4 = %1) AND (IN1 = %0) AND (IN6 = %0) THEN   'Switch to follow code. The in1 and in6 with and statement is meant to prevent false activation by an arrow
      GOSUB ActivateFollow
     ENDIF
+LOOP
 
-
+Follow:
+DO
+  SELECT INL
+    CASE %11000000, %11100000                 ' Pivot right
+      PULSOUT 13, 650                                                '12 is right motor
+      PULSOUT 12, 650
+    CASE %01100000, %01110000                 ' Curve right
+      PULSOUT 13, 700
+      PULSOUT 12, 650
+    CASE %00110000, %00100000                 ' Slight right
+      PULSOUT 13, 750
+      PULSOUT 12, 650
+    CASE %00111000                            ' Adjust right
+      PULSOUT 13, 780
+      PULSOUT 12, 650
+    CASE %00011000, %00001000, %00010000                            ' Straight
+      PULSOUT 13, 850
+      PULSOUT 12, 650
+    CASE %00011100                            ' Adjust left
+      PULSOUT 13, 850
+      PULSOUT 12, 730
+    CASE %00001100                            ' Slight left
+      PULSOUT 13, 850
+      PULSOUT 12, 750
+    CASE %00000110, %00001110                 ' Curve left
+      PULSOUT 13, 850
+      PULSOUT 12, 800
+    CASE %00000011, %00000111                 ' Pivot left
+      PULSOUT 13, 850
+      PULSOUT 12, 850
+    'CASE %00000000
+      'GOSUB ActivateAvoidance
+  ENDSELECT
+    IF (IN3 = %0) AND (IN4 = %0) THEN GOSUB ActivateAvoidance        'if this doesn't work, just re enable the case
 LOOP
 
 ToEnd:
+PAUSE 1000 'r
 FOR x=1 TO 50
  PULSOUT 13, 850
  PULSOUT 12, 650
@@ -53,7 +88,7 @@ FOR x=1 TO 9
  PULSOUT 12, 650
  PAUSE 20
 NEXT
-PAUSE 1000
+PAUSE 1000 'r
 FOR x=1 TO 60
  PULSOUT 13, 850
  PULSOUT 12, 750
@@ -67,7 +102,7 @@ FOR x=1 TO 9
  PULSOUT 12, 650
  PAUSE 20
 NEXT
-PAUSE 1000
+PAUSE 1000 'r
 FOR x=1 TO 15
  PULSOUT 13, 850
  PULSOUT 12, 850
@@ -81,7 +116,7 @@ FOR x=1 TO 9
  PULSOUT 12, 650
  PAUSE 20
 NEXT
-PAUSE 1000
+PAUSE 1000 'r
 FOR x=1 TO 15
  PULSOUT 13, 650
  PULSOUT 12, 650
@@ -122,37 +157,3 @@ DO
  LOW 8
 LOOP
 
-Follow:
-DO
-  SELECT INL
-    CASE %11000000, %11100000                 ' Pivot right
-      PULSOUT 13, 650                                                '12 is right motor
-      PULSOUT 12, 650
-    CASE %01100000, %01110000                 ' Curve right
-      PULSOUT 13, 700
-      PULSOUT 12, 650
-    CASE %00110000, %00100000                 ' Slight right
-      PULSOUT 13, 750
-      PULSOUT 12, 650
-    CASE %00111000                            ' Adjust right
-      PULSOUT 13, 780
-      PULSOUT 12, 650
-    CASE %00011000, %00001000, %00010000                            ' Straight
-      PULSOUT 13, 850
-      PULSOUT 12, 650
-    CASE %00011100                            ' Adjust left
-      PULSOUT 13, 850
-      PULSOUT 12, 730
-    CASE %00001100                            ' Slight left
-      PULSOUT 13, 850
-      PULSOUT 12, 750
-    CASE %00000110, %00001110                 ' Curve left
-      PULSOUT 13, 850
-      PULSOUT 12, 800
-    CASE %00000011, %00000111                 ' Pivot left
-      PULSOUT 13, 850
-      PULSOUT 12, 850
-    CASE %00000000
-      GOSUB ActivateAvoidance
-  ENDSELECT
-LOOP
