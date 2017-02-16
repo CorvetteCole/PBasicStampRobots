@@ -16,16 +16,10 @@ DO
   PULSOUT 12, 650
 
   SELECT INL
-    CASE %11000000, %01100000, %00100000                 ' Left line avoid
+    CASE %11000000, %01100000, %00100000, %10000000                 ' Left line avoid
       PULSOUT 13, 850                                                      '12 is right motor
       PULSOUT 12, 750
-    CASE %10000000
-      PULSOUT 13, 850
-      PULSOUT 12, 750
-    CASE %00000001
-      PULSOUT 13, 750
-      PULSOUT 12, 650
-    CASE %00000011, %00000110, %00000100                  ' Right line avoid
+    CASE %00000011, %00000110, %00000100, %00000001                   ' Right line avoid
       PULSOUT 13, 750
       PULSOUT 12, 650
   ENDSELECT
@@ -46,7 +40,7 @@ DO
 LOOP
 
 ToEnd:
-FOR x=1 TO 20
+FOR x=1 TO 50
  PULSOUT 13, 850
  PULSOUT 12, 650
  PAUSE 20
