@@ -2,7 +2,11 @@
 ' {$PBASIC 2.5}
 x VAR Word
 y VAR Word
+L VAR Word
+R VAR Word
 y=0
+L=0
+R=0
 'REMOVE PAUSES IN TURNS BEFORE TIMING
 
 
@@ -16,23 +20,38 @@ DO
   PULSOUT 12, 650
 
   SELECT INL
-    CASE %11000000, %01100000, %00100000, %10000000                 ' Left line avoid
+    CASE %11000000, %01100000, %00100000                ' Left line avoid
       PULSOUT 13, 850                                                      '12 is right motor
       PULSOUT 12, 750
-    CASE %00000011, %00000110, %00000100, %00000001                   ' Right line avoid
+    CASE %00000001              'adjust right
+      PULSOUT 13, 750
+      PULSOUT 12, 650
+    CASE %10000000
+      PULSOUT 13, 850           'adjust left
+      PULSOUT 12, 750
+    CASE %00000011, %00000110, %00000100                   ' Right line avoid
       PULSOUT 13, 750
       PULSOUT 12, 650
   ENDSELECT
 
-    IF (IN7 = %1) AND (IN6 = %1) THEN GOSUB Left90                  'Trigger left turn
-    IF (IN0 = %1) AND (IN1 = %1) THEN GOSUB Right90                 'Trigger right turn
-    IF (y = 3) THEN GOSUB ToEnd                                     'Activates ending subroutine when the code is read
 
-    IF (IN3 = %1) AND (IN4 = %1) AND (IN1 = %1) AND (IN6 = %1) THEN   'ARROW DETECTION CODE           Trigger 180 degree turn upon hitting arrow
-     GOSUB Deg180
-    endif
+    IF (IN7 = %1) AND (IN0 = %1) AND (IN3 = %0) AND (IN4 = %0) THEN GOSUB SCurve
+    IF (IN7 = %1) AND (IN6 = %1) AND (IN4 = %0) THEN L=L+1
+    IF (L = 4) THEN GOSUB Left90                  'Trigger left turn                'ATTENTION: changed activation delay for left and right to 4 from the original 2
+    IF (IN0 = %1) AND (IN1 = %1) AND (IN3 = %0) THEN R=R+1
+    IF (R = 4) THEN GOSUB Right90                 'Trigger right turn
+    IF (y > 0) THEN y=y+1                                     'Activates ending subroutine when the code is read
+    IF (y = 60) THEN GOSUB FlashyLights
 
-    IF (IN3 = %1) OR (IN4 = %1) AND (IN1 = %0) AND (IN6 = %0) THEN   'Switch to follow code. The in1 and in6 with and statement is meant to prevent false activation by an arrow
+    IF (IN7 = %1) AND (IN6 = %1) AND (IN5 = %1) AND (IN6 = %1) AND (IN1 = %0) THEN   'Trigger 180 degree turn upon hitting code
+     GOSUB Deg180Right
+    ENDIF
+
+    IF (IN0 = %1) AND (IN1 = %1) AND (IN2 = %1) AND (IN3 = %1) AND (IN6 = %0) THEN
+     GOSUB Deg180Left
+    ENDIF
+
+    IF (IN3 = %1) OR (IN4 = %1) AND (IN1 = %0) AND (IN6 = %0) AND (IN2 = %0) AND (IN5 = %0) THEN   'Switch to follow code. The in1 and in6 with and statement is meant to prevent false activation by an arrow
      GOSUB ActivateFollow
     ENDIF
 LOOP
@@ -49,15 +68,15 @@ DO
     CASE %00110000, %00100000                 ' Slight right
       PULSOUT 13, 750
       PULSOUT 12, 650
-    CASE %00111000                            ' Adjust right
-      PULSOUT 13, 780
+    CASE %00111000, %00010000                 ' Adjust right
+      PULSOUT 13, 750
       PULSOUT 12, 650
-    CASE %00011000, %00001000, %00010000                            ' Straight
+    CASE %00011000                            ' Straight
+       PULSOUT 13, 850
+       PULSOUT 12, 650
+    CASE %00011100, %00001000                 ' Adjust left
       PULSOUT 13, 850
-      PULSOUT 12, 650
-    CASE %00011100                            ' Adjust left
-      PULSOUT 13, 850
-      PULSOUT 12, 730
+      PULSOUT 12, 750
     CASE %00001100                            ' Slight left
       PULSOUT 13, 850
       PULSOUT 12, 750
@@ -67,42 +86,77 @@ DO
     CASE %00000011, %00000111                 ' Pivot left
       PULSOUT 13, 850
       PULSOUT 12, 850
-    'CASE %00000000
-      'GOSUB ActivateAvoidance
+    CASE %10000000, %00000001, %00000000, %10000001
+      GOSUB Avoidance
   ENDSELECT
-    IF (IN3 = %0) AND (IN4 = %0) THEN GOSUB ActivateAvoidance        'if this doesn't work, just re enable the case
 LOOP
 
-ToEnd:
-PAUSE 1000 'r
-FOR x=1 TO 50
+SCurve:
+FOR x=1 TO 15
+ PULSOUT 13, 850
+ PULSOUT 12, 650
+ PAUSE 20
+NEXT
+FOR x=1 TO 13
+ PULSOUT 13, 850
+ PULSOUT 12, 850
+ PAUSE 20
+NEXT
+FOR x=1 TO 15
+ PULSOUT 13, 850
+ PULSOUT 12, 650
+ PAUSE 20
+NEXT
+FOR x=1 TO 12
+ PULSOUT 13, 650
+ PULSOUT 12, 650
+ PAUSE 20
+NEXT
+y=1
+GOSUB Avoidance
+
+ToEnd:                    'This code can be removed if alternative timer method works
+FOR x=1 TO 30
  PULSOUT 13, 850
  PULSOUT 12, 650
  PAUSE 20
 NEXT
 GOSUB FlashyLights
 
-Deg180:
-FOR x=1 TO 9
+Deg180Right:
+FOR x=1 TO 6
  PULSOUT 13, 850
  PULSOUT 12, 650
  PAUSE 20
 NEXT
-PAUSE 1000 'r
-FOR x=1 TO 60
+FOR x=1 TO 56
  PULSOUT 13, 850
  PULSOUT 12, 750
  PAUSE 20
 NEXT
 GOSUB Avoidance
 
-Right90:
-FOR x=1 TO 9
+Deg180Left:
+FOR x=1 TO 6
  PULSOUT 13, 850
  PULSOUT 12, 650
  PAUSE 20
 NEXT
-PAUSE 1000 'r
+FOR x=1 TO 50
+ PULSOUT 13, 750
+ PULSOUT 12, 650
+ PAUSE 20
+NEXT
+GOSUB Avoidance
+
+Right90:
+R=0
+L=0
+FOR x=1 TO 12
+ PULSOUT 13, 850
+ PULSOUT 12, 650
+ PAUSE 20
+NEXT
 FOR x=1 TO 15
  PULSOUT 13, 850
  PULSOUT 12, 850
@@ -111,12 +165,13 @@ NEXT
 GOSUB Avoidance
 
 Left90:
-FOR x=1 TO 9
+R=0
+L=0
+FOR x=1 TO 12
  PULSOUT 13, 850
  PULSOUT 12, 650
  PAUSE 20
 NEXT
-PAUSE 1000 'r
 FOR x=1 TO 15
  PULSOUT 13, 650
  PULSOUT 12, 650
@@ -125,23 +180,13 @@ NEXT
 GOSUB Avoidance
 
 ActivateFollow:
-y=y+1     'Adds 1 to y everytime the middle sensors are activated initially. This will happen when going across the ending code, allowing that to be read
+'y=y+1     'Adds 1 to y everytime the middle sensors are activated initially. This will happen when going across the ending code, allowing that to be read
 DO
  PULSOUT 13, 850
  PULSOUT 12, 650
   SELECT INL
    CASE %00010000, %00001000, %00011000
     GOSUB Follow
-  ENDSELECT
-LOOP
-
-ActivateAvoidance:
-DO
- PULSOUT 13, 850
- PULSOUT 12, 650
-  SELECT INL
-   CASE %10000000, %00000001, %00000000, %10000001
-    GOSUB Avoidance
   ENDSELECT
 LOOP
 
@@ -156,4 +201,3 @@ DO
  PAUSE 100
  LOW 8
 LOOP
-
