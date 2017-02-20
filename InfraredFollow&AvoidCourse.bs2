@@ -24,11 +24,11 @@ DO
       PULSOUT 13, 850                                                      '12 is right motor
       PULSOUT 12, 750
     CASE %00000001              'adjust right
-      PULSOUT 13, 750
+      PULSOUT 13, 780
       PULSOUT 12, 650
     CASE %10000000
       PULSOUT 13, 850           'adjust left
-      PULSOUT 12, 750
+      PULSOUT 12, 720
     CASE %00000011, %00000110, %00000100                   ' Right line avoid
       PULSOUT 13, 750
       PULSOUT 12, 650
@@ -36,24 +36,21 @@ DO
 
 
     IF (IN7 = %1) AND (IN0 = %1) AND (IN3 = %0) AND (IN4 = %0) THEN GOSUB SCurve
+
     IF (IN7 = %1) AND (IN6 = %1) AND (IN4 = %0) THEN L=L+1
     IF (L = 4) THEN GOSUB Left90                  'Trigger left turn                'ATTENTION: changed activation delay for left and right to 4 from the original 2
+
     IF (IN0 = %1) AND (IN1 = %1) AND (IN3 = %0) THEN R=R+1
     IF (R = 4) THEN GOSUB Right90                 'Trigger right turn
+
     IF (y > 0) THEN y=y+1                                     'Activates ending subroutine when the code is read
     IF (y = 60) THEN GOSUB FlashyLights
 
-    IF (IN7 = %1) AND (IN6 = %1) AND (IN5 = %1) AND (IN6 = %1) AND (IN1 = %0) THEN   'Trigger 180 degree turn upon hitting code
-     GOSUB Deg180Right
-    ENDIF
+    IF (IN7 = %1) AND (IN6 = %1) AND (IN5 = %1) AND (IN6 = %1) AND (IN1 = %0) THEN GOSUB Deg180Right   'Trigger 180 degree turn upon hitting code
 
-    IF (IN0 = %1) AND (IN1 = %1) AND (IN2 = %1) AND (IN3 = %1) AND (IN6 = %0) THEN
-     GOSUB Deg180Left
-    ENDIF
+    IF (IN0 = %1) AND (IN1 = %1) AND (IN2 = %1) AND (IN3 = %1) AND (IN6 = %0) THEN GOSUB Deg180Left
 
-    IF (IN3 = %1) OR (IN4 = %1) AND (IN1 = %0) AND (IN6 = %0) AND (IN2 = %0) AND (IN5 = %0) THEN   'Switch to follow code. The in1 and in6 with and statement is meant to prevent false activation by an arrow
-     GOSUB ActivateFollow
-    ENDIF
+    IF (IN3 = %1) OR (IN4 = %1) AND (IN1 = %0) AND (IN6 = %0) AND (IN2 = %0) AND (IN5 = %0) THEN GOSUB ActivateFollow  'Switch to follow code. The in1 and in6 with and statement is meant to prevent false activation by other course activators
 LOOP
 
 Follow:
@@ -97,7 +94,7 @@ FOR x=1 TO 15
  PULSOUT 12, 650
  PAUSE 20
 NEXT
-FOR x=1 TO 13
+FOR x=1 TO 12
  PULSOUT 13, 850
  PULSOUT 12, 850
  PAUSE 20
@@ -187,17 +184,19 @@ DO
   SELECT INL
    CASE %00010000, %00001000, %00011000
     GOSUB Follow
+   CASE %00000000
+    GOSUB Avoidance
   ENDSELECT
 LOOP
 
 FlashyLights:
 DO
  PAUSE 100
- HIGH 8
+  HIGH 8
  PAUSE 100
- LOW 9
+  LOW 9
  PAUSE 100
- HIGH 9
+  HIGH 9
  PAUSE 100
- LOW 8
+  LOW 8
 LOOP
