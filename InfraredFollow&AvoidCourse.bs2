@@ -16,17 +16,17 @@ R=0
 
 Avoidance:
 DO
-  PULSOUT 13, 830
+  PULSOUT 13, 830                        'Attempt to bring these back up to full speed once the rest of the code is working. Don't forget to change with avoidance values too
   PULSOUT 12, 670
 
   SELECT INL
     CASE %11000000, %01100000, %00100000                ' Left line avoid
       PULSOUT 13, 830                                                      '12 is right motor
       PULSOUT 12, 750
-    CASE %00000001              'adjust right
-      PULSOUT 13, 750
+    CASE %10000000              'adjust right
+      PULSOUT 13, 750                                              'switched the cases between adjust right and left. SHOULD work and if it does that was major bug
       PULSOUT 12, 670
-    CASE %10000000
+    CASE %00000001
       PULSOUT 13, 830           'adjust left
       PULSOUT 12, 750
     CASE %00000011, %00000110, %00000100                   ' Right line avoid
@@ -42,15 +42,16 @@ DO
     IF (IN0 = %1) AND (IN1 = %1) AND (IN2 = %1) AND (IN3 = %0) THEN R=R+1
     IF (R = 1) THEN GOSUB Right90                 'Trigger right turn
 
-    IF (y = 3) THEN GOSUB ToEnd
-    'IF (y > 0) THEN y=y+1                                     'Activates ending subroutine when the code is read
+    IF (y = 3) THEN GOSUB ToEnd                       'Activates ending subroutine when the code is read
+
+    'IF (y > 0) THEN y=y+1
     'IF (y = 60) THEN GOSUB FlashyLights
 
     IF (IN7 = %1) AND (IN6 = %1) AND (IN5 = %1) AND (IN4 = %1) AND (IN1 = %0) THEN GOSUB Deg180Right   'Trigger 180 degree turn upon hitting code
 
     IF (IN0 = %1) AND (IN1 = %1) AND (IN2 = %1) AND (IN3 = %1) AND (IN6 = %0) THEN GOSUB Deg180Left
 
-    IF (IN3 = %1) OR (IN4 = %1) AND (IN1 = %0) AND (IN6 = %0) THEN GOSUB ActivateFollow  'Switch to follow code. The in1 and in6 with and statement is meant to prevent false activation by other course activators
+    IF (IN3 = %1) OR (IN4 = %1) AND (IN1 = %0) AND (IN6 = %0) THEN GOSUB ActivateFollow   'Switch to follow code. The in1 and in6 with and statement is meant to prevent false activation by other course activators
 LOOp
 
 Follow:
@@ -90,7 +91,7 @@ LOOP
 
 SCurve:
 PAUSE 1000
-FOR x=1 TO 15
+FOR x=1 TO 20
  PULSOUT 13, 650
  PULSOUT 12, 850
  PAUSE 20
@@ -114,7 +115,7 @@ NEXT
 y=1
 GOSUB Avoidance
 
-ToEnd:                    'This code can be removed if alternative timer method works
+ToEnd:                    'This code can be removed if alternative timer method works (but it may stay if I like it better, I'm indecisive)
 FOR x=1 TO 30
  PULSOUT 13, 850
  PULSOUT 12, 650
@@ -157,8 +158,8 @@ FOR x=1 TO 15
  PAUSE 20
 NEXT
 FOR x=1 TO 14
- PULSOUT 13, 830
- PULSOUT 12, 830
+ PULSOUT 13, 850
+ PULSOUT 12, 850
  PAUSE 20
 NEXT
 GOSUB Avoidance
@@ -172,8 +173,8 @@ FOR x=1 TO 15
  PAUSE 20
 NEXT
 FOR x=1 TO 14
- PULSOUT 13, 670
- PULSOUT 12, 670
+ PULSOUT 13, 650
+ PULSOUT 12, 650
  PAUSE 20
 NEXT
 GOSUB Avoidance
@@ -184,7 +185,7 @@ DO
  PULSOUT 13, 850
  PULSOUT 12, 650
   SELECT INL
-   CASE %10000000, %00000001, %00000000, %10000001     
+   CASE %10000000, %00000001, %00000000, %10000001
     GOSUB Avoidance
   ENDSELECT
  IF (IN3 = %1) OR (IN4 = %1) AND (IN1 = %0) AND (IN6 = %0) THEN GOSUB Follow
