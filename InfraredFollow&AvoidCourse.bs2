@@ -16,42 +16,42 @@ R=0
 
 Avoidance:
 DO
-  PULSOUT 13, 850
-  PULSOUT 12, 650
+  PULSOUT 13, 830
+  PULSOUT 12, 670
 
   SELECT INL
     CASE %11000000, %01100000, %00100000                ' Left line avoid
-      PULSOUT 13, 850                                                      '12 is right motor
+      PULSOUT 13, 830                                                      '12 is right motor
       PULSOUT 12, 750
     CASE %00000001              'adjust right
-      PULSOUT 13, 780
-      PULSOUT 12, 650
+      PULSOUT 13, 750
+      PULSOUT 12, 670
     CASE %10000000
-      PULSOUT 13, 850           'adjust left
-      PULSOUT 12, 720
+      PULSOUT 13, 830           'adjust left
+      PULSOUT 12, 750
     CASE %00000011, %00000110, %00000100                   ' Right line avoid
       PULSOUT 13, 750
-      PULSOUT 12, 650
+      PULSOUT 12, 670
+    CASE %11111111
+      GOSUB SCurve
   ENDSELECT
 
+    IF (IN7 = %1) AND (IN6 = %1) AND (IN5 = %1) AND (IN4 = %0) THEN L=L+1
+    IF (L = 1) THEN GOSUB Left90                  'Trigger left turn
 
-    IF (IN7 = %1) AND (IN0 = %1) AND (IN3 = %0) AND (IN4 = %0) THEN GOSUB SCurve
+    IF (IN0 = %1) AND (IN1 = %1) AND (IN2 = %1) AND (IN3 = %0) THEN R=R+1
+    IF (R = 1) THEN GOSUB Right90                 'Trigger right turn
 
-    IF (IN7 = %1) AND (IN6 = %1) AND (IN4 = %0) THEN L=L+1
-    IF (L = 4) THEN GOSUB Left90                  'Trigger left turn                'ATTENTION: changed activation delay for left and right to 4 from the original 2
+    IF (y = 3) THEN GOSUB ToEnd
+    'IF (y > 0) THEN y=y+1                                     'Activates ending subroutine when the code is read
+    'IF (y = 60) THEN GOSUB FlashyLights
 
-    IF (IN0 = %1) AND (IN1 = %1) AND (IN3 = %0) THEN R=R+1
-    IF (R = 4) THEN GOSUB Right90                 'Trigger right turn
-
-    IF (y > 0) THEN y=y+1                                     'Activates ending subroutine when the code is read
-    IF (y = 60) THEN GOSUB FlashyLights
-
-    IF (IN7 = %1) AND (IN6 = %1) AND (IN5 = %1) AND (IN6 = %1) AND (IN1 = %0) THEN GOSUB Deg180Right   'Trigger 180 degree turn upon hitting code
+    IF (IN7 = %1) AND (IN6 = %1) AND (IN5 = %1) AND (IN4 = %1) AND (IN1 = %0) THEN GOSUB Deg180Right   'Trigger 180 degree turn upon hitting code
 
     IF (IN0 = %1) AND (IN1 = %1) AND (IN2 = %1) AND (IN3 = %1) AND (IN6 = %0) THEN GOSUB Deg180Left
 
-    IF (IN3 = %1) OR (IN4 = %1) AND (IN1 = %0) AND (IN6 = %0) AND (IN2 = %0) AND (IN5 = %0) THEN GOSUB ActivateFollow  'Switch to follow code. The in1 and in6 with and statement is meant to prevent false activation by other course activators
-LOOP
+    IF (IN3 = %1) OR (IN4 = %1) AND (IN1 = %0) AND (IN6 = %0) THEN GOSUB ActivateFollow  'Switch to follow code. The in1 and in6 with and statement is meant to prevent false activation by other course activators
+LOOp
 
 Follow:
 DO
@@ -89,22 +89,24 @@ DO
 LOOP
 
 SCurve:
+PAUSE 1000
 FOR x=1 TO 15
- PULSOUT 13, 850
- PULSOUT 12, 650
- PAUSE 20
-NEXT
-FOR x=1 TO 12
- PULSOUT 13, 850
+ PULSOUT 13, 650
  PULSOUT 12, 850
  PAUSE 20
 NEXT
 FOR x=1 TO 15
  PULSOUT 13, 850
+ PULSOUT 12, 850
+ PAUSE 20
+NEXT
+PAUSE 1000
+FOR x=1 TO 25
+ PULSOUT 13, 850
  PULSOUT 12, 650
  PAUSE 20
 NEXT
-FOR x=1 TO 12
+FOR x=1 TO 15
  PULSOUT 13, 650
  PULSOUT 12, 650
  PAUSE 20
@@ -139,7 +141,7 @@ FOR x=1 TO 6
  PULSOUT 12, 650
  PAUSE 20
 NEXT
-FOR x=1 TO 50
+FOR x=1 TO 54
  PULSOUT 13, 750
  PULSOUT 12, 650
  PAUSE 20
@@ -149,14 +151,14 @@ GOSUB Avoidance
 Right90:
 R=0
 L=0
-FOR x=1 TO 12
+FOR x=1 TO 15
  PULSOUT 13, 850
  PULSOUT 12, 650
  PAUSE 20
 NEXT
-FOR x=1 TO 15
- PULSOUT 13, 850
- PULSOUT 12, 850
+FOR x=1 TO 14
+ PULSOUT 13, 830
+ PULSOUT 12, 830
  PAUSE 20
 NEXT
 GOSUB Avoidance
@@ -164,29 +166,28 @@ GOSUB Avoidance
 Left90:
 R=0
 L=0
-FOR x=1 TO 12
+FOR x=1 TO 15
  PULSOUT 13, 850
  PULSOUT 12, 650
  PAUSE 20
 NEXT
-FOR x=1 TO 15
- PULSOUT 13, 650
- PULSOUT 12, 650
+FOR x=1 TO 14
+ PULSOUT 13, 670
+ PULSOUT 12, 670
  PAUSE 20
 NEXT
 GOSUB Avoidance
 
 ActivateFollow:
-'y=y+1     'Adds 1 to y everytime the middle sensors are activated initially. This will happen when going across the ending code, allowing that to be read
+y=y+1     'Adds 1 to y everytime the middle sensors are activated initially. This will happen when going across the ending code, allowing that to be read
 DO
  PULSOUT 13, 850
  PULSOUT 12, 650
   SELECT INL
-   CASE %00010000, %00001000, %00011000
-    GOSUB Follow
-   CASE %00000000
+   CASE %10000000, %00000001, %00000000, %10000001     
     GOSUB Avoidance
   ENDSELECT
+ IF (IN3 = %1) OR (IN4 = %1) AND (IN1 = %0) AND (IN6 = %0) THEN GOSUB Follow
 LOOP
 
 FlashyLights:
