@@ -24,11 +24,11 @@ DO
       PULSOUT 13, 830                                                      '12 is right motor
       PULSOUT 12, 750
     CASE %10000000              'adjust right
-      PULSOUT 13, 750                                              'switched the cases between adjust right and left. SHOULD work and if it does that was major bug
-      PULSOUT 12, 670
-    CASE %00000001
-      PULSOUT 13, 830           'adjust left
+      PULSOUT 13, 830                                              'switched the cases between adjust right and left. SHOULD work and if it does that was major bug
       PULSOUT 12, 750
+    CASE %00000001
+      PULSOUT 13, 750           'adjust left
+      PULSOUT 12, 670
     CASE %00000011, %00000110, %00000100                   ' Right line avoid
       PULSOUT 13, 750
       PULSOUT 12, 670
@@ -112,7 +112,6 @@ FOR x=1 TO 15
  PULSOUT 12, 650
  PAUSE 20
 NEXT
-y=1
 GOSUB Avoidance
 
 ToEnd:                    'This code can be removed if alternative timer method works (but it may stay if I like it better, I'm indecisive)
