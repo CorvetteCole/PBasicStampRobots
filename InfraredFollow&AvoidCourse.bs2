@@ -32,19 +32,23 @@ Avoidance:
     IF (IN3 = %1) OR (IN4 = %1) AND (IN1 = %0) AND (IN6 = %0) THEN GOSUB ActivateFollow   'Switch to follow code. The in1 and in6 with and statement is meant to prevent false activation by other course activators
 
   SELECT INL
+
+    CASE %11111111, %01111111, %10111111, %11011111, %11101111, %11110111, %11111011, %11111101, %11111110, %00111111, %11111100
+      GOSUB Read180
+
     CASE %01000000, %01100000, %00100000, %10000000, %00000011                ' Left line avoid
       PULSOUT 13, 840                                                      '12 is right motor
       PULSOUT 12, 750
       PAUSE 5
       GOSUB Avoidance
     CASE %00000010, %00000110, %00000100, %00000001, %11000000                   ' Right line avoid
+
       PULSOUT 13, 750
       PULSOUT 12, 670
       PAUSE 5
       GOSUB Avoidance
 
-    CASE %11111111, %01111111, %10111111, %11011111, %11101111, %11110111, %11111011, %11111101, %11111110, %00111111, %11111100
-      GOSUB Read180
+
     'CASE %11100000, %11100001, %11000000
       'GOSUB Left90
     'CASE %00000111, %10000111, %00000011
