@@ -16,41 +16,43 @@ R=0
 
 Avoidance:
 
-  PULSOUT 13, 830                        'Attempt to bring these back up to full speed once the rest of the code is working. Don't forget to change with avoidance values too
+  PULSOUT 13, 840                        'Attempt to bring these back up to full speed once the rest of the code is working. Don't forget to change with avoidance values too
   PULSOUT 12, 670
 
-  SELECT INL
-    CASE %01000000, %01100000, %00100000, %10000000                ' Left line avoid
-      PULSOUT 13, 830                                                      '12 is right motor
-      PULSOUT 12, 750
-      GOSUB Avoidance
-    CASE %00000010, %00000110, %00000100, %00000001                   ' Right line avoid
-      PULSOUT 13, 750
-      PULSOUT 12, 670
-      GOSUB Avoidance
-    'CASE %11000011
-      'GOSUB SCurve
-    CASE %11111111, %01111111, %10111111, %11011111, %11101111, %11110111, %11111011, %11111101, %11111110
-      GOSUB Read180
-    CASE %11100000, %11100001
-      GOSUB Left90
-    CASE %00000111, %10000111
-      GOSUB Right90
-  ENDSELECT
-
-
-    IF (IN7 = %1) AND (IN6 = %1) AND (IN5 = %1) AND (IN4 = %0) THEN GOSUB Left90
+    IF (IN7 = %1) AND (IN6 = %1) AND (IN3 = %0) THEN GOSUB ActivateLeft
     'IF (L = 1) OR (L > 1) THEN GOSUB Left90                  'Trigger left turn
 
-    IF (IN0 = %1) AND (IN1 = %1) AND (IN2 = %1) AND (IN3 = %0) THEN GOSUB Right90
+    IF (IN0 = %1) AND (IN1 = %1) AND (IN4 = %0) THEN GOSUB ActivateRight
     'IF (R = 1) OR (R > 1) THEN GOSUB Right90                 'Trigger right turn
-
-    'IF (y = 3) OR (y > 3) THEN GOSUB ToEnd                       'Activates ending subroutine when the code is read
+    IF (y = 4) OR (y > 3) THEN GOSUB ToEnd                       'Activates ending subroutine when the code is read
 
     'IF (y > 0) THEN y=y+1
     'IF (y = 60) THEN GOSUB FlashyLights
 
     IF (IN3 = %1) OR (IN4 = %1) AND (IN1 = %0) AND (IN6 = %0) THEN GOSUB ActivateFollow   'Switch to follow code. The in1 and in6 with and statement is meant to prevent false activation by other course activators
+
+  SELECT INL
+    CASE %01000000, %01100000, %00100000, %10000000, %00000011                ' Left line avoid
+      PULSOUT 13, 840                                                      '12 is right motor
+      PULSOUT 12, 750
+      PAUSE 5
+      GOSUB Avoidance
+    CASE %00000010, %00000110, %00000100, %00000001, %11000000                   ' Right line avoid
+      PULSOUT 13, 750
+      PULSOUT 12, 670
+      PAUSE 5
+      GOSUB Avoidance
+
+    CASE %11111111, %01111111, %10111111, %11011111, %11101111, %11110111, %11111011, %11111101, %11111110, %00111111, %11111100
+      GOSUB Read180
+    'CASE %11100000, %11100001, %11000000
+      'GOSUB Left90
+    'CASE %00000111, %10000111, %00000011
+      'GOSUB Right90
+  ENDSELECT
+
+
+
 
 GOSUB Avoidance
 
@@ -92,14 +94,18 @@ LOOP
 Read180:
 PAUSE 1000
 DO
- PULSOUT 13, 800
- PULSOUT 12, 700
+ PULSOUT 13, 840
+ PULSOUT 12, 670
+
+ IF (IN0 = %1) AND (IN7 = %1) AND (IN4 = %0) AND (IN3 = %0) THEN GOSUB SCurve
 
  SELECT INL
-  CASE %11110000, %11111000, %11110001, %11111001
+  CASE %11110000, %11111000, %11110001, %11111001, %11111100
    GOSUB Deg180Right
-  CASE %00001111, %00011111, %10001111, %10011111
+  CASE %00001111, %00011111, %10001111, %10011111, %00111111
    GOSUB Deg180Left
+  CASE %11000111, %11000011, %11100011
+   GOSUB SCurve
   ENDSELECT
 
  'IF (IN7 = %1) AND (IN6 = %1) AND (IN5 = %1) AND (IN4 = %1) AND (IN1 = %0) THEN GOSUB Deg180Right   'Trigger 180 degree turn upon hitting code
@@ -111,22 +117,22 @@ LOOP
 SCurve:
 PAUSE 1000
 FOR x=1 TO 20
- PULSOUT 13, 650
- PULSOUT 12, 850
+ PULSOUT 13, 850
+ PULSOUT 12, 650
  PAUSE 20
 NEXT
-FOR x=1 TO 15
+FOR x=1 TO 14
  PULSOUT 13, 850
  PULSOUT 12, 850
  PAUSE 20
 NEXT
 PAUSE 1000
-FOR x=1 TO 20
+FOR x=1 TO 27
  PULSOUT 13, 850
  PULSOUT 12, 650
  PAUSE 20
 NEXT
-FOR x=1 TO 15
+FOR x=1 TO 14
  PULSOUT 13, 650
  PULSOUT 12, 650
  PAUSE 20
@@ -142,6 +148,7 @@ NEXT
 GOSUB FlashyLights
 
 Deg180Right:
+PAUSE 1000
 R=0
 L=0
 FOR x=1 TO 6
@@ -149,7 +156,7 @@ FOR x=1 TO 6
  PULSOUT 12, 650
  PAUSE 20
 NEXT
-FOR x=1 TO 54
+FOR x=1 TO 56
  PULSOUT 13, 850
  PULSOUT 12, 750
  PAUSE 20
@@ -157,24 +164,36 @@ NEXT
 GOSUB Avoidance
 
 Deg180Left:
+PAUSE 1000
 R=0
 L=0
-FOR x=1 TO 6
+FOR x=1 TO 8
  PULSOUT 13, 850
  PULSOUT 12, 650
  PAUSE 20
 NEXT
-FOR x=1 TO 54
+FOR x=1 TO 50
  PULSOUT 13, 750
  PULSOUT 12, 650
  PAUSE 20
 NEXT
 GOSUB Avoidance
 
+ActivateRight:
+SELECT INL
+ CASE %00011111, %10001111, %10011111, %00111111
+   GOSUB Deg180Left
+ CASE %11111111
+   GOSUB Read180
+ CASE %11000111, %11000011, %11100011
+   GOSUB SCurve
+ENDSELECT
+GOSUB Right90
+
 Right90:
 R=0
 L=0
-FOR x=1 TO 19
+FOR x=1 TO 17
  PULSOUT 13, 850
  PULSOUT 12, 650
  PAUSE 20
@@ -186,10 +205,21 @@ FOR x=1 TO 14
 NEXT
 GOSUB Avoidance
 
+ActivateLeft:
+SELECT INL
+ CASE %11111000, %11110001, %11111001, %11111100
+   GOSUB Deg180Right
+ CASE %11111111
+   GOSUB Read180
+ CASE %11000111, %11000011, %11100011
+   GOSUB SCurve
+ENDSELECT
+GOSUB Left90
+
 Left90:
 R=0
 L=0
-FOR x=1 TO 19
+FOR x=1 TO 17
  PULSOUT 13, 850
  PULSOUT 12, 650
  PAUSE 20
@@ -204,13 +234,15 @@ GOSUB Avoidance
 ActivateFollow:
 y=y+1     'Adds 1 to y everytime the middle sensors are activated initially. This will happen when going across the ending code, allowing that to be read
 DO
- PULSOUT 13, 850
- PULSOUT 12, 650
-  SELECT INL
-   CASE %10000000, %00000001, %00000000, %10000001
-    GOSUB Avoidance
-  ENDSELECT
- IF (IN3 = %1) OR (IN4 = %1) AND (IN1 = %0) AND (IN6 = %0) THEN GOSUB Follow
+ IF (IN0 = %1) AND (IN1 = %1) AND (IN2 = %1) AND (IN3 = %1) AND (IN4 = %1) AND (IN5 = %1) AND (IN6 = %1) AND (IN7 = %1) THEN
+  GOSUB Read180
+ ENDIF
+ IF (IN3 = %1) OR (IN4 = %1) AND (IN1 = %0) AND (IN6 = %0) THEN
+  GOSUB Follow
+ ELSE
+  GOSUB Avoidance
+ ENDIF
+
 LOOP
 
 FlashyLights:
