@@ -7,7 +7,6 @@ R VAR Word
 y=0
 L=0
 R=0
-'***Check and see if the added gosubs in the avoidance code actually help it detect things faster
 
 
 'IF (INX = %0) THEN   'X represents breadboard pin referring to whatever sensor chosen.
@@ -20,42 +19,29 @@ Avoidance:
   PULSOUT 12, 670
 
     IF (IN7 = %1) AND (IN6 = %1) AND (IN3 = %0) THEN GOSUB ActivateLeft
-    'IF (L = 1) OR (L > 1) THEN GOSUB Left90                  'Trigger left turn
-
     IF (IN0 = %1) AND (IN1 = %1) AND (IN4 = %0) THEN GOSUB ActivateRight
-    'IF (R = 1) OR (R > 1) THEN GOSUB Right90                 'Trigger right turn
-    IF (y = 4) OR (y > 3) THEN GOSUB ToEnd                       'Activates ending subroutine when the code is read
-
-    'IF (y > 0) THEN y=y+1
-    'IF (y = 60) THEN GOSUB FlashyLights
-
-    IF (IN3 = %1) OR (IN4 = %1) AND (IN1 = %0) AND (IN6 = %0) THEN GOSUB ActivateFollow   'Switch to follow code. The in1 and in6 with and statement is meant to prevent false activation by other course activators
 
   SELECT INL
 
-    CASE %11111111, %01111111, %10111111, %11011111, %11101111, %11110111, %11111011, %11111101, %11111110, %00111111, %11111100
+    CASE %11111111, %01111111, %11111011, %11111101, %11111110, %00111111, %11111100
       GOSUB Read180
 
-    CASE %01000000, %01100000, %00100000, %10000000, %00000011                ' Left line avoid
+    CASE %01100000, %10000000, %00000011                ' Left line avoid
       PULSOUT 13, 840                                                      '12 is right motor
       PULSOUT 12, 750
       PAUSE 5
       GOSUB Avoidance
-    CASE %00000010, %00000110, %00000100, %00000001, %11000000                   ' Right line avoid
-
+    CASE %00000110, %00000001, %11000000                   ' Right line avoid
       PULSOUT 13, 750
       PULSOUT 12, 670
       PAUSE 5
       GOSUB Avoidance
-
-
-    'CASE %11100000, %11100001, %11000000
-      'GOSUB Left90
-    'CASE %00000111, %10000111, %00000011
-      'GOSUB Right90
   ENDSELECT
 
+  IF (IN3 = %1) OR (IN4 = %1) AND (IN1 = %0) AND (IN6 = %0) THEN GOSUB ActivateFollow   'Switch to follow code. The in1 and in6 with and statement is meant to prevent false activation by other course activators
 
+  IF (y > 0) THEN y=y+1
+  IF (y > 110) OR (y = 110) THEN GOSUB FlashyLights
 
 
 GOSUB Avoidance
@@ -102,6 +88,8 @@ DO
  PULSOUT 12, 670
 
  IF (IN0 = %1) AND (IN7 = %1) AND (IN4 = %0) AND (IN3 = %0) THEN GOSUB SCurve
+ IF (IN1 = %1) AND (IN7 = %1) AND (IN4 = %0) AND (IN3 = %0) THEN GOSUB SCurve
+ IF (IN0 = %1) AND (IN6 = %1) AND (IN4 = %0) AND (IN3 = %0) THEN GOSUB SCurve
 
  SELECT INL
   CASE %11110000, %11111000, %11110001, %11111001, %11111100
@@ -111,16 +99,12 @@ DO
   CASE %11000111, %11000011, %11100011
    GOSUB SCurve
   ENDSELECT
-
- 'IF (IN7 = %1) AND (IN6 = %1) AND (IN5 = %1) AND (IN4 = %1) AND (IN1 = %0) THEN GOSUB Deg180Right   'Trigger 180 degree turn upon hitting code
-
- 'IF (IN0 = %1) AND (IN1 = %1) AND (IN2 = %1) AND (IN3 = %1) AND (IN6 = %0) THEN GOSUB Deg180Left
-
 LOOP
 
 SCurve:
+y=1
 PAUSE 1000
-FOR x=1 TO 20
+FOR x=1 TO 18
  PULSOUT 13, 850
  PULSOUT 12, 650
  PAUSE 20
@@ -131,25 +115,17 @@ FOR x=1 TO 14
  PAUSE 20
 NEXT
 PAUSE 1000
-FOR x=1 TO 27
+FOR x=1 TO 25
  PULSOUT 13, 850
  PULSOUT 12, 650
  PAUSE 20
 NEXT
-FOR x=1 TO 14
+FOR x=1 TO 16
  PULSOUT 13, 650
  PULSOUT 12, 650
  PAUSE 20
 NEXT
 GOSUB Avoidance
-
-ToEnd:                    'This code can be removed if alternative timer method works (but it may stay if I like it better, I'm indecisive)
-FOR x=1 TO 30
- PULSOUT 13, 850
- PULSOUT 12, 650
- PAUSE 20
-NEXT
-GOSUB FlashyLights
 
 Deg180Right:
 PAUSE 1000
@@ -236,7 +212,6 @@ NEXT
 GOSUB Avoidance
 
 ActivateFollow:
-y=y+1     'Adds 1 to y everytime the middle sensors are activated initially. This will happen when going across the ending code, allowing that to be read
 DO
  IF (IN0 = %1) AND (IN1 = %1) AND (IN2 = %1) AND (IN3 = %1) AND (IN4 = %1) AND (IN5 = %1) AND (IN6 = %1) AND (IN7 = %1) THEN
   GOSUB Read180
