@@ -14,7 +14,7 @@ R=0
   'ENDIF
 
 Avoidance:
-  PULSOUT 13, 840                        'Attempt to bring these back up to full speed once the rest of the code is working. Don't forget to change with avoidance values too
+  PULSOUT 13, 840                                      'Attempt to bring these back up to full speed once the rest of the code is working. Don't forget to change with avoidance values too
   PULSOUT 12, 670
 
     IF (IN7 = %1) AND (IN6 = %1) AND (IN3 = %0) THEN GOSUB ActivateLeft
@@ -23,14 +23,14 @@ Avoidance:
   SELECT INL
     CASE %11111111, %01111111, %11111011, %11111101, %11111110, %00111111, %11111100
       GOSUB Read180
-    CASE %01100000, %10000000, %00000011                ' Left line avoid
-      PULSOUT 13, 840                                                      '12 is right motor
+    CASE %01100000, %10000000, %00000011                'Left line avoid
+      PULSOUT 13, 850 '840                                   '12 is right motor
       PULSOUT 12, 750
       PAUSE 5
       GOSUB Avoidance
-    CASE %00000110, %00000001, %11000000                   ' Right line avoid
+    CASE %00000110, %00000001, %11000000                ' Right line avoid
       PULSOUT 13, 750
-      PULSOUT 12, 670
+      PULSOUT 12, 650 '670
       PAUSE 5
       GOSUB Avoidance
   ENDSELECT
