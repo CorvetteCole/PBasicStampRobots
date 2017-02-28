@@ -14,7 +14,6 @@ R=0
   'ENDIF
 
 Avoidance:
-
   PULSOUT 13, 840                        'Attempt to bring these back up to full speed once the rest of the code is working. Don't forget to change with avoidance values too
   PULSOUT 12, 670
 
@@ -22,10 +21,8 @@ Avoidance:
     IF (IN0 = %1) AND (IN1 = %1) AND (IN4 = %0) THEN GOSUB ActivateRight
 
   SELECT INL
-
     CASE %11111111, %01111111, %11111011, %11111101, %11111110, %00111111, %11111100
       GOSUB Read180
-
     CASE %01100000, %10000000, %00000011                ' Left line avoid
       PULSOUT 13, 840                                                      '12 is right motor
       PULSOUT 12, 750
@@ -39,10 +36,8 @@ Avoidance:
   ENDSELECT
 
   IF (IN3 = %1) OR (IN4 = %1) AND (IN1 = %0) AND (IN6 = %0) THEN GOSUB ActivateFollow   'Switch to follow code. The in1 and in6 with and statement is meant to prevent false activation by other course activators
-
   IF (y > 0) THEN y=y+1
   IF (y > 110) OR (y = 110) THEN GOSUB FlashyLights
-
 
 GOSUB Avoidance
 
@@ -83,7 +78,6 @@ LOOP
 
 Read180:
 PAUSE 1000
-DO
  PULSOUT 13, 840
  PULSOUT 12, 670
 
@@ -99,11 +93,10 @@ DO
   CASE %11000111, %11000011, %11100011
    GOSUB SCurve
   ENDSELECT
-LOOP
+GOSUB Read180
 
 SCurve:
 y=1
-PAUSE 1000
 FOR x=1 TO 18
  PULSOUT 13, 850
  PULSOUT 12, 650
@@ -114,13 +107,13 @@ FOR x=1 TO 14
  PULSOUT 12, 850
  PAUSE 20
 NEXT
-PAUSE 1000
+PAUSE 20
 FOR x=1 TO 25
  PULSOUT 13, 850
  PULSOUT 12, 650
  PAUSE 20
 NEXT
-FOR x=1 TO 16
+FOR x=1 TO 14
  PULSOUT 13, 650
  PULSOUT 12, 650
  PAUSE 20
@@ -128,9 +121,9 @@ NEXT
 GOSUB Avoidance
 
 Deg180Right:
-PAUSE 1000
 R=0
 L=0
+PAUSE 1000
 FOR x=1 TO 6
  PULSOUT 13, 850
  PULSOUT 12, 650
@@ -144,9 +137,9 @@ NEXT
 GOSUB Avoidance
 
 Deg180Left:
-PAUSE 1000
 R=0
 L=0
+PAUSE 1000
 FOR x=1 TO 8
  PULSOUT 13, 850
  PULSOUT 12, 650
@@ -178,7 +171,7 @@ FOR x=1 TO 17
  PULSOUT 12, 650
  PAUSE 20
 NEXT
-FOR x=1 TO 14
+FOR x=1 TO 16
  PULSOUT 13, 850
  PULSOUT 12, 850
  PAUSE 20
