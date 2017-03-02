@@ -1,0 +1,30 @@
+' {$STAMP BS2}
+' {$PBASIC 2.5}
+y VAR Word
+y=1
+
+
+'IF (INX = %0) THEN   'X represents breadboard pin referring to whatever sensor chosen.
+   'gosub something
+  'ENDIF
+
+Avoidance:
+  PULSOUT 13, 840                                      'Attempt to bring these back up to full speed once the rest of the code is working. Don't forget to change with avoidance values too
+  PULSOUT 12, 670
+  SELECT INL
+    CASE %01100000, %10000000, %00000011                'Left line avoid
+      PULSOUT 13, 850 '840                                   '12 is right motor
+      PULSOUT 12, 750
+      PAUSE 5
+      GOSUB Avoidance
+    CASE %00000110, %00000001, %11000000                ' Right line avoid
+      PULSOUT 13, 750
+      PULSOUT 12, 650 '670
+      PAUSE 5
+      GOSUB Avoidance
+  ENDSELECT
+
+  IF (y>0) THEN y=y+1
+  DEBUG HOME, "ran",DEC5 y
+
+GOSUB Avoidance
